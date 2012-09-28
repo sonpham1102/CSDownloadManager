@@ -122,6 +122,20 @@ static NSString* const kReverseUrlIdentifier = @"com.cschwarz.CSDownloadManager"
     
 }
 
+- (void)resetDownloadManager {
+    
+    [self.fileManager removeItemAtPath:finishedIndexFilePath() error:NULL];
+    
+    self._finishedDownloads = [NSMutableArray array];
+    for (CSActiveDownload* activeDownload in self.activeDownloads) {
+        [activeDownload.connection cancel];
+    }
+    self._activeDownloads = [NSMutableArray array];
+
+    [self indexCorruptionCheck];
+
+}
+
 #pragma mark - file system methods
 
 - (NSString*)finDir {

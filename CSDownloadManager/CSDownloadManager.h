@@ -63,5 +63,7 @@ static NSString* const CSDownloadManagerInternalInconsistencyException = @"CSDow
 
 - (void)processFinishedDownload:(CSActiveDownload*)finishedDownload callback:(void(^)(NSInteger formerIndex, NSInteger newIndex))callback;
 
+- (void)resetDownloadManager;
+
 
 @end
