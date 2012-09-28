@@ -300,6 +300,18 @@ NSString* finishedIndexFilePath() {
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     
+    //Check if response is ok
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse* httpresponse = (NSHTTPURLResponse*)response;
+        if (httpresponse.statusCode >= 400) {
+            [connection cancel];
+            NSDictionary *errorInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat: NSLocalizedString(@"Server returned status code %d",@""), httpresponse.statusCode] forKey:NSLocalizedDescriptionKey];
+            NSError *statusError = [NSError errorWithDomain:kReverseUrlIdentifier code:CSDownloadManagerConnectionError userInfo:errorInfo];
+            [self connection:connection didFailWithError:statusError];
+        }
+    }
+    
+    
     CSActiveDownload* currentActiveDownload = [self activeDownloadForConnection:connection];
     
     currentActiveDownload.response = [response copy];
@@ -331,6 +343,7 @@ NSString* finishedIndexFilePath() {
 
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    
     
     CSActiveDownload* download = [self activeDownloadForConnection:connection];
     [download.fileHandle closeFile];
